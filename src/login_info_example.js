@@ -1,3 +1,0 @@
-export const USERNAME = '[PLACE HERE YOURE USERNAME]';
-export const PASSWORD = '[PLACE HERE YOUR PASSWORD]';
-export const TOKEN = '[PLACE HERE YOUR TOKEN]';
