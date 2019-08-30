@@ -4,9 +4,13 @@
 * Gabriela Guedes - 16/0121612
 * Alexandre Miguel - 16/0000840
 
+## Configurações
+O projeto forma grafos com informações da API do Twitter, para poder rodar o projeto é necessário ter uma conta no twitter e cadastra-la como [developer](https://developer.twitter.com/). Após ter sua conta na Twitter Developer, é necessário [criar um App](https://developer.twitter.com/en/apps/create).
+
+Com o App criado, renomeie o arquivo `example_tokens.py` para `tokens.py` e coloque os tokens do seu App no lugar indicado.
 
 ## Instalação
-O projeto utiliza da bibliotecas `plotly` para a visualização dos grafos. Para instalar a biblioteca rode o comando:
+O projeto utiliza da biblioteca `plotly` para a visualização dos grafos. Para instalar a biblioteca rode o comando:
 ``` sh
 pip install plotly
 ```
