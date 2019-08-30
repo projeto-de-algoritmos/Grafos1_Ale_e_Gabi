@@ -10,9 +10,10 @@ O projeto forma grafos com informações da API do Twitter, para poder rodar o p
 Com o App criado, renomeie o arquivo `example_tokens.py` para `tokens.py` e coloque os tokens do seu App no lugar indicado.
 
 ## Instalação
-O projeto utiliza da biblioteca `plotly` para a visualização dos grafos. Para instalar a biblioteca rode o comando:
+O projeto utiliza das bibliotecas `plotly` e `networkx` para a visualização dos grafos. Para instalar as bibliotecas rode os comandos:
 ``` sh
 pip install plotly
+pip install networkx
 ```
 Além da plotly o projeto também utiliza da biblioteca `requests` para fazer as requisições para a API do Twitter. Para instalar rode o comando:
 ``` sh

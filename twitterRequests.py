@@ -35,10 +35,10 @@ def get_user_id(username):
     return user['id']
 
 
-def get_list(id, relationship, cursor=-1):
+def get_list(user, relationship, cursor=-1):
     header = {'authorization': 'Bearer ' + TOKEN}
     url = 'https://api.twitter.com/1.1/' + relationship + \
-        '/list.json?user_id=' + str(id) + '&count=200&cursor=' + str(cursor)
+        '/list.json?screen_name=' + user + '&count=200&cursor=' + str(cursor)
     r = requests.get(url, headers=header)
     response = json.loads(r.text)
     next_page = response['next_cursor']
