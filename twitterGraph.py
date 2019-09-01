@@ -7,13 +7,9 @@ import networkx as nx
 def get_pos():
     return [random.random() for i in range(0, 2)]
 
-def get_id():
-    username = input('Whats your username: ')
-    user_id = get_user_id(username)
-    return user_id
-
-def mount_graph(user_id):
-    friends = get_list(user_id, 'friends')
+def mount_graph():
+    username = input('Whats your Twitter username? ')
+    friends = get_list(username, 'friends')
     create_graph(friends)
 
 
@@ -82,13 +78,13 @@ def create_graph(vec):
 
     fig = go.Figure(data=[edge_trace, node_trace],
                     layout=go.Layout(
-                    title='<br>Network graph made with Python',
+                title='<b>Projeto e Análise de Algoritimos - Grafos 1</b>',
                     titlefont_size=16,
                     showlegend=False,
                     hovermode='closest',
                     margin=dict(b=20, l=5, r=5, t=40),
                     annotations=[dict(
-                        text="Python code: <a href='https://plot.ly/ipython-notebooks/network-graphs/'> https://plot.ly/ipython-notebooks/network-graphs/</a>",
+                        text="Feito por Alexandre Miguel e Gabriela Guedes",
                         showarrow=False,
                         xref="paper", yref="paper",
                         x=0.005, y=-0.002)],
@@ -101,5 +97,4 @@ def create_graph(vec):
 
 if __name__ == "__main__":
     create_barear_token()
-    my_id = get_id()
-    mount_graph(my_id)
+    mount_graph()
