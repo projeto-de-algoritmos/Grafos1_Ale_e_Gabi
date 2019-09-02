@@ -10,6 +10,9 @@ def get_pos():
 def mount_graph():
     username = input('Whats your Twitter username? ')
     friends = get_list(username, 'friends')
+    for friend in friends:
+        if friend['verified']:
+            friends.remove(friend)
     create_graph(friends)
 
 
@@ -29,23 +32,15 @@ def create_graph(vec):
                 if(friend_id == node[1]['id']):
                     print('here')
                     G.add_edge(out_node[0], node[0])
-                    
 
 
-
+    pos = nx.fruchterman_reingold_layout(G)
 
     edge_x = []
     edge_y = []
-    for edge in G.edges():
-        x0, y0 = G.node[edge[0]]['pos']
-        x1, y1 = G.node[edge[1]]['pos']
-        print(G.node[edge[0]])
-        edge_x.append(x0)
-        edge_x.append(x1)
-        edge_x.append(None)
-        edge_y.append(y0)
-        edge_y.append(y1)
-        edge_y.append(None)
+    for e in G.edges():
+        edge_x.extend([pos[e[0]][0], pos[e[1]][0], None])
+        edge_y.extend([pos[e[0]][1], pos[e[1]][1], None])
 
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
@@ -53,12 +48,8 @@ def create_graph(vec):
         hoverinfo='none',
         mode='lines')
 
-    node_x = []
-    node_y = []
-    for node in G.nodes():
-        x, y = G.node[node]['pos']
-        node_x.append(x)
-        node_y.append(y)
+    node_x =[pos[k][0] for k in range(len(pos))]
+    node_y=[pos[k][1] for k in range(len(pos))]
 
     node_trace = go.Scatter(
         x=node_x, y=node_y,
@@ -108,6 +99,7 @@ def create_graph(vec):
                     yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
                     )
     fig.show()
+
 
 
 if __name__ == "__main__":
