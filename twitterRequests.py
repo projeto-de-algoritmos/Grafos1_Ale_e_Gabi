@@ -49,14 +49,12 @@ def get_list(user, relationship, cursor=-1):
 
     return friends
 
-def get_id(user, relationship, cursor=-1):
+def get_ids(user, relationship, cursor=-1):
     header = {'authorization': 'Bearer ' + TOKEN}
     url = 'https://api.twitter.com/1.1/' + relationship + \
         '/ids.json?screen_name=' + user + '&count=200&cursor=' + str(cursor)
-    print(url)
     r = requests.get(url, headers=header)
     response = json.loads(r.text)
-    print(response)
     try:
         next_page = response['next_cursor']
         friends = response['ids']  

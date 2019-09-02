@@ -1,15 +1,39 @@
 import plotly.graph_objects as go
 import random
+import networkx as nx
+import os
 from twitterRequests import *
 
-import networkx as nx
+def get_user_list(username):
+    file_path = 'data/user_list/' + username + '.json'
+    data = []
+    if os.path.isfile(file_path):
+        with open(file_path) as json_file:
+            data = json.load(json_file)
+    else:
+        data = get_list(username, 'friends')
+        print(data)
+        with open(file_path, 'w') as outfile:
+            json.dump(data, outfile)
+    
+    return data
 
-def get_pos():
-    return [random.random() for i in range(0, 2)]
+def get_ids_list(username):
+    file_path = 'data/ids/' + username + '.json'
+    data = []
+    if os.path.isfile(file_path):
+        with open(file_path) as json_file:
+            data = json.load(json_file)
+    else:
+        data = get_ids(username, 'friends')
+        with open(file_path, 'w') as outfile:
+            json.dump(data, outfile)
+    
+    return data
 
 def mount_graph():
     username = input('Whats your Twitter username? ')
-    friends = get_list(username, 'friends')
+    friends = get_user_list(username)
     for friend in friends:
         if friend['verified']:
             friends.remove(friend)
@@ -20,13 +44,13 @@ def create_graph(vec):
     G = nx.Graph()
 
     for i in range(0,len(vec)):
-        G.add_node(i, pos=get_pos(), name=vec[i]['name'], id=vec[i]['id'], username=vec[i]['screen_name'])
+        G.add_node(i, name=vec[i]['name'], id=vec[i]['id'], username=vec[i]['screen_name'])
 
     nodes = G.nodes(data=True)
     for out_node in nodes:
         username = str(out_node[1]['username'])
         print(username)
-        related_friends = get_id(username, 'friends')
+        related_friends = get_ids_list(username)
         for node in nodes:
             for friend_id in related_friends:
                 if(friend_id == node[1]['id']):
