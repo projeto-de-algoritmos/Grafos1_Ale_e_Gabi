@@ -12,9 +12,9 @@ def get_user_list(username):
             data = json.load(json_file)
     else:
         data = get_list(username, 'friends')
-        print(data)
-        with open(file_path, 'w') as outfile:
-            json.dump(data, outfile)
+        if len(data) > 0:
+            with open(file_path, 'w') as outfile:
+                json.dump(data, outfile)
     
     return data
 
@@ -25,9 +25,11 @@ def get_ids_list(username):
         with open(file_path) as json_file:
             data = json.load(json_file)
     else:
-        data = get_ids(username, 'friends')
-        with open(file_path, 'w') as outfile:
-            json.dump(data, outfile)
+        data, rate_limit = get_ids(username, 'friends')
+        print(rate_limit)
+        if not rate_limit:
+            with open(file_path, 'w') as outfile:
+                json.dump(data, outfile)
     
     return data
 

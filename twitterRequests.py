@@ -41,9 +41,16 @@ def get_list(user, relationship, cursor=-1):
         '/list.json?screen_name=' + user + '&count=200&cursor=' + str(cursor)
     r = requests.get(url, headers=header)
     response = json.loads(r.text)
-    next_page = response['next_cursor']
-    friends = response['users']  
-
+    try:
+        next_page = response['next_cursor']
+        friends = response['users'] 
+    except KeyError:
+        if 'errors' in response.keys():
+            print('Rate Limit Exceeded')
+        else:
+            print('Private Account')
+        next_page = 0
+        friends = []
     if next_page != 0:
         friends = [*friends, *get_list(user, relationship, next_page)]
 
@@ -55,15 +62,20 @@ def get_ids(user, relationship, cursor=-1):
         '/ids.json?screen_name=' + user + '&count=200&cursor=' + str(cursor)
     r = requests.get(url, headers=header)
     response = json.loads(r.text)
+    rate_limit = False
     try:
         next_page = response['next_cursor']
         friends = response['ids']  
     except KeyError:
-        print('Private Account')
+        if 'errors' in response.keys():
+            rate_limit = True
+            print('Rate Limit Exceeded')
+        else:
+            print('Private Account')
         next_page = 0
         friends = []
 
     if next_page != 0:
-        friends = [*friends, *get_list(user, relationship, next_page)]
+        friends = [*friends, *get_ids(user, relationship, next_page)]
 
-    return friends
+    return friends, rate_limit
