@@ -17,7 +17,22 @@ def create_graph(vec):
     G = nx.Graph()
 
     for i in range(0,len(vec)):
-        G.add_node(i, pos=get_pos(), name=vec[i]['name'])
+        G.add_node(i, pos=get_pos(), name=vec[i]['name'], id=vec[i]['id'], username=vec[i]['screen_name'])
+
+    nodes = G.nodes(data=True)
+    for out_node in nodes:
+        username = str(out_node[1]['username'])
+        print(username)
+        related_friends = get_id(username, 'friends')
+        for node in nodes:
+            for friend_id in related_friends:
+                if(friend_id == node[1]['id']):
+                    print('here')
+                    G.add_edge(out_node[0], node[0])
+                    
+
+
+
 
     edge_x = []
     edge_y = []
