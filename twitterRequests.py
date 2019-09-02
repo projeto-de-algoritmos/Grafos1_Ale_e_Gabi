@@ -36,15 +36,26 @@ def get_user_id(username):
 
 
 def get_list(user, relationship, cursor=-1):
+    print(user)
+    print(relationship)
+    print(cursor)
     header = {'authorization': 'Bearer ' + TOKEN}
     url = 'https://api.twitter.com/1.1/' + relationship + \
         '/list.json?screen_name=' + user + '&count=200&cursor=' + str(cursor)
     r = requests.get(url, headers=header)
     response = json.loads(r.text)
-    next_page = response['next_cursor']
-    friends = response['users']
+    if 'error' in response.keys():
+        print(response['error'])
+        return []
+    elif 'errors' in response.keys():
+        print(response['errors'])
+        return []
+    else:
+        next_page = response['next_cursor']
+        friends = response['users']
 
-    if next_page != 0:
-        friends = [*friends, *get_list(id, relationship, next_page)]
+        if next_page != 0:
+            print('here')
+            friends = [*friends, *get_list(user, relationship, next_page)]
 
-    return friends
+        return friends
