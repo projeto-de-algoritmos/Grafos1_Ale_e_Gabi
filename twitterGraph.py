@@ -36,9 +36,16 @@ def get_ids_list(username):
 def mount_graph():
     username = input('Whats your Twitter username? ')
     friends = get_user_list(username)
+    verified = []
     for friend in friends:
+        print('verified: ', friend['verified'])
+        print(type(friend['verified']))
         if friend['verified']:
-            friends.remove(friend)
+            verified.append(friend)
+    
+    for famous in verified:
+        friends.remove(famous)
+
     create_graph(friends)
 
 
