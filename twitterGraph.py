@@ -53,7 +53,7 @@ def create_graph(vec):
     G = nx.Graph()
 
     for i in range(0,len(vec)):
-        G.add_node(i, name=vec[i]['name'], id=vec[i]['id'], username=vec[i]['screen_name'])
+        G.add_node(i, name=vec[i]['name'], id=vec[i]['id'], username=vec[i]['screen_name'], visited=False)
 
     nodes = G.nodes(data=True)
     for out_node in nodes:
@@ -63,7 +63,7 @@ def create_graph(vec):
         for node in nodes:
             for friend_id in related_friends:
                 if(friend_id == node[1]['id']):
-                    G.add_edge(out_node[0], node[0])
+                    G.add_edge(out_node[0], node[0], layer=0, traveled=False)
     
     return show_graph(G)
 
@@ -114,7 +114,7 @@ def show_graph(G, colors = []):
     node_text = []
     for node, adjacencies in enumerate(G.adjacency()):
         node_adjacencies.append(len(adjacencies[1]))
-        node_text.append(G.nodes[node]['name'])
+        node_text.append(G.nodes[node]['name'] + ' \n@' + G.nodes[node]['username'])
 
     node_trace.marker.color = node_adjacencies
     node_trace.text = node_text
@@ -146,19 +146,58 @@ def get_user_graph_id(username, G):
             return i
     return -1
 
+def breadth_first_search(username):
+    nodes = G.nodes(data=True)
+    origin = get_user_graph_id(username, G)
+    path = []
+    if (origin != -1):
+        nodes[origin]['visited'] = True
+        path = list(G.adj[origin])
+        for init_pos in path:
+            nodes[init_pos]['visited'] = True
+            G.edges[origin, init_pos]['traveled'] = True
+            G.edges[origin, init_pos]['layer'] = 1
+        for pos in path:
+            neighbours = list(G.adj[pos])
+            for n_pos in neighbours:
+                if(nodes[n_pos]['visited']):
+                    if(G.edges[origin, init_pos]['layer'] == 0):
+                        G.edges[origin, init_pos]['layer'] = 2
+                else:
+                    path.append(n_pos)
+                    nodes[n_pos]['visited'] = True
+                    G.edges[pos, n_pos]['traveled'] = True
+                    G.edges[pos, n_pos]['layer'] = 1
+
+
+        
+
+
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     create_barear_token()
     G = mount_graph()
-    print('Find the shortest path between two users:')
-    usr1 = input('From: ')
-    usr2 = input('To: ')
-    id1 = get_user_graph_id(usr1, G)
-    id2 = get_user_graph_id(usr2, G)
+    # print('Find the shortest path between two users:')
+    # usr1 = input('From: ')
+    # usr2 = input('To: ')
+    # id1 = get_user_graph_id(usr1, G)
+    # id2 = get_user_graph_id(usr2, G)
 
-    path = search_path(id1, id2, G)
+    # path = search_path(id1, id2, G)
 
-    for id in path:
-        print(G.nodes[id]['name'])
+    # for id in path:
+    #     print(G.nodes[id]['name'])
     
-    node_colors = ["blue" if n in path else "red" for n in G.nodes()]
+    # node_colors = ["blue" if n in path else "red" for n in G.nodes()]
+
+    usr3 = input('Perform Breadth First Search from user (use name without @): ')
+    breadth_first_search(usr3)
+
     show_graph(G, node_colors)
