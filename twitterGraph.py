@@ -2,6 +2,8 @@ import plotly.graph_objects as go
 import random
 import networkx as nx
 import os
+from collections import deque
+
 from twitterRequests import *
 
 def get_user_list(username):
@@ -38,18 +40,16 @@ def mount_graph():
     friends = get_user_list(username)
     verified = []
     for friend in friends:
-        print('verified: ', friend['verified'])
-        print(type(friend['verified']))
         if friend['verified']:
             verified.append(friend)
     
     for famous in verified:
         friends.remove(famous)
 
-    create_graph(friends)
-
+    return create_graph(friends)
 
 def create_graph(vec):
+
     G = nx.Graph()
 
     for i in range(0,len(vec)):
@@ -63,10 +63,14 @@ def create_graph(vec):
         for node in nodes:
             for friend_id in related_friends:
                 if(friend_id == node[1]['id']):
-                    print('here')
                     G.add_edge(out_node[0], node[0])
+    
+    return show_graph(G)
 
-
+def show_graph(G, colors = []):
+    scale = True
+    if len(colors) > 0:
+        scale = False
     pos = nx.fruchterman_reingold_layout(G)
 
     edge_x = []
@@ -89,14 +93,14 @@ def create_graph(vec):
         mode='markers',
         hoverinfo='text',
         marker=dict(
-            showscale=True,
+            showscale=False,
             # colorscale options
             #'Greys' | 'YlGnBu' | 'Greens' | 'YlOrRd' | 'Bluered' | 'RdBu' |
             #'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
             #'Hot' | 'Blackbody' | 'Earth' | 'Electric' | 'Viridis' |
             colorscale='YlGnBu',
             reversescale=True,
-            color=[],
+            color=colors,
             size=10,
             colorbar=dict(
                 thickness=15,
@@ -114,7 +118,6 @@ def create_graph(vec):
 
     node_trace.marker.color = node_adjacencies
     node_trace.text = node_text
-
     fig = go.Figure(data=[edge_trace, node_trace],
                     layout=go.Layout(
                 title='<b>Projeto e Análise de Algoritimos - Grafos 1</b>',
@@ -132,9 +135,30 @@ def create_graph(vec):
                     yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
                     )
     fig.show()
+    return G
 
+def search_path(from_user, to_user, G):
+    return nx.shortest_path(G, from_user, to_user)
 
+def get_user_graph_id(username, G):
+    for i in range(0, len(G)):
+        if G.nodes[i]['username'] == username:
+            return i
+    return -1
 
 if __name__ == "__main__":
     create_barear_token()
-    mount_graph()
+    G = mount_graph()
+    print('Find the shortest path between two users:')
+    usr1 = input('From: ')
+    usr2 = input('To: ')
+    id1 = get_user_graph_id(usr1, G)
+    id2 = get_user_graph_id(usr2, G)
+
+    path = search_path(id1, id2, G)
+
+    for id in path:
+        print(G.nodes[id]['name'])
+    
+    node_colors = ["blue" if n in path else "red" for n in G.nodes()]
+    show_graph(G, node_colors)
