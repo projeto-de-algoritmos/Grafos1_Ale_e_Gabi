@@ -36,8 +36,8 @@ def get_ids_list(username):
     return data
 
 def mount_graph():
-    username = input('Whats your Twitter username? ')
-    friends = get_user_list(username)
+    user = input('Whats your Twitter username? ')
+    friends = get_user_list(user)
     verified = []
     for friend in friends:
         if friend['verified']:
@@ -46,9 +46,9 @@ def mount_graph():
     for famous in verified:
         friends.remove(famous)
 
-    return create_graph(friends)
+    return create_graph(friends, user)
 
-def create_graph(vec):
+def create_graph(vec, user):
 
     G = nx.Graph()
 
@@ -65,12 +65,11 @@ def create_graph(vec):
                 if(friend_id == node[1]['id']):
                     G.add_edge(out_node[0], node[0])
     
-    return show_graph(G)
+    title = 'Grafo de quem ' + user + ' segue no Twitter'
+    return show_graph(G, title)
 
-def show_graph(G, colors = []):
-    scale = True
-    if len(colors) > 0:
-        scale = False
+def show_graph(G, text, colors = []):
+
     pos = nx.fruchterman_reingold_layout(G)
 
     edge_x = []
@@ -81,7 +80,7 @@ def show_graph(G, colors = []):
 
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
-        line=dict(width=0.5, color='#888'),
+        line=dict(width=1, color='#888'),
         hoverinfo='none',
         mode='lines')
 
@@ -93,7 +92,7 @@ def show_graph(G, colors = []):
         mode='markers',
         hoverinfo='text',
         marker=dict(
-            showscale=False,
+            showscale=True,
             # colorscale options
             #'Greys' | 'YlGnBu' | 'Greens' | 'YlOrRd' | 'Bluered' | 'RdBu' |
             #'Reds' | 'Blues' | 'Picnic' | 'Rainbow' | 'Portland' | 'Jet' |
@@ -116,11 +115,15 @@ def show_graph(G, colors = []):
         node_adjacencies.append(len(adjacencies[1]))
         node_text.append(G.nodes[node]['name'])
 
-    node_trace.marker.color = node_adjacencies
+    if len(colors) > 0:
+        node_trace.marker.color = colors                
+    else:
+        node_trace.marker.color = node_adjacencies
+
     node_trace.text = node_text
     fig = go.Figure(data=[edge_trace, node_trace],
                     layout=go.Layout(
-                title='<b>Projeto e Análise de Algoritimos - Grafos 1</b>',
+                title='<b>'+text+'</b>',
                     titlefont_size=16,
                     showlegend=False,
                     hovermode='closest',
@@ -155,10 +158,15 @@ if __name__ == "__main__":
     id1 = get_user_graph_id(usr1, G)
     id2 = get_user_graph_id(usr2, G)
 
-    path = search_path(id1, id2, G)
+    if(not (id1 == -1) and  not (id2 == -1)):
+        path = search_path(id1, id2, G)
 
-    for id in path:
-        print(G.nodes[id]['name'])
-    
-    node_colors = ["blue" if n in path else "red" for n in G.nodes()]
-    show_graph(G, node_colors)
+        print('\nO menor caminho:')
+        for id in path:
+            print(G.nodes[id]['name'])
+        
+        node_colors = ["blue" if n in path else "red" for n in G.nodes()]
+        title = 'Menor caminho entre ' + G.nodes[id1]['name'] + ' e ' + G.nodes[id2]['name']
+        show_graph(G, title , node_colors)
+    else:
+        print('username incorreto')
